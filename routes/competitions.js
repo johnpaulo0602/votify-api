@@ -7,17 +7,37 @@ router.post('/', async (req, res) => {
   try {
     const { title, description, startDate, endDate, options } = req.body;
 
-    // Validação básica dos dados
+    // Validação dos dados recebidos
     if (!title || !startDate || !endDate || !options || options.length < 2) {
-      return res.status(400).json({ message: 'Dados inválidos. Verifique os campos obrigatórios. Verifique se há pelo menos duas opções.' });
+      return res.status(400).json({ message: 'Dados inválidos. Certifique-se de que todos os campos obrigatórios foram preenchidos e que existem pelo menos duas opções.' });
+    }
+
+    // converte as datas para objetos Date
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const now = new Date();
+
+    // Verificar se as datas são válidas
+    if (isNaN(start) || isNaN(end)) {
+      return res.status(400).json({ message: 'Datas inválidas. Certifique-se de que as datas estão no formato correto.' });
+    }
+
+    // Verificar se startDate não está no passado
+    if (start < now) {
+      return res.status(400).json({ message: 'A data de início não pode estar no passado.' });
+    }
+
+    // Verificar se startDate é anterior a endDate
+    if (start >= end) {
+      return res.status(400).json({ message: 'A data de início deve ser anterior à data de término.' });
     }
 
     // Criar a competição
     const competition = await Competition.create({
       title,
       description,
-      startDate,
-      endDate
+      startDate: start,
+      endDate: end
     });
 
     // Criar as opções e associá-las à competição
@@ -32,6 +52,7 @@ router.post('/', async (req, res) => {
     res.status(500).json({ message: 'Erro interno do servidor' });
   }
 });
+
 
 
 module.exports = router;
