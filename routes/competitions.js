@@ -22,8 +22,14 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ message: 'Datas inválidas. Certifique-se de que as datas estão no formato correto.' });
     }
 
+ 
+    const today = new Date();
+    today.setHours("0, 0, 0, 0");
+
+    const startDateOnly = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+
     // Verificar se startDate não está no passado
-    if (start < now) {
+    if (startDateOnly < today) {
       return res.status(400).json({ message: 'A data de início não pode estar no passado.' });
     }
 
@@ -52,7 +58,6 @@ router.post('/', async (req, res) => {
     res.status(500).json({ message: 'Erro interno do servidor' });
   }
 });
-
 
 
 module.exports = router;
