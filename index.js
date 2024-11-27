@@ -5,6 +5,7 @@ const sequelize = require('./config/database');
 const Competition = require('./models/Competition');
 const Option = require('./models/Option');
 const Vote = require('./models/Vote');
+const competitionsRouter = require('./routes/competitions');
 
 dotenv.config();
 
@@ -12,12 +13,12 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
+app.use('/competitions', competitionsRouter);
 
 app.get('/', (req, res) => {
   res.send('Bem-vindo à API Votify!');
 });
 
-// Sincronizar o banco de dados
 sequelize.sync().then(() => {
   console.log('Banco de dados sincronizado com sucesso.');
 }).catch((error) => {
